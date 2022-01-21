@@ -60,5 +60,5 @@ function checkAnswer(word) {
             return res.json();
         })
         .then(data => data)
-        .catch(error => 404)
+        .catch(error => error)
 }
