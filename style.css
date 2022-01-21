@@ -22,6 +22,12 @@ main {
     justify-content: space-between;
 }
 
+
+
+main {
+    border: 1px solid orange;
+}
+
 button:hover {
     cursor: pointer;
 }
@@ -99,18 +105,14 @@ header button {
 #game-keyboard {
     display: flex;
     flex-direction: column;
-    padding: 10px;
+    padding: 10px 0;
     gap: 5px;
 }
 
 .keyboard-row {
     display: flex;
     gap: 5px;
-    justify-content: center;
-}
-
-.keyboard-row button {
-    padding: 1rem;
+    justify-content: stretch;
 }
 
 #game-keyboard button {
@@ -118,4 +120,5 @@ header button {
     border: none;
     border-radius: 2px;
     font-size: 1.5rem;
+    flex: 1;
 }
