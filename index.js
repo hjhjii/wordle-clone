@@ -3,7 +3,6 @@ let currentRow = 0;
 let currentBox = 0;
 document.addEventListener("keyup", keyPressHandler)
 let answer = pickWord()
-// add event listester for DEL and ENTER keys
 
 function pickWord() {
     let word = db[Math.floor(Math.random() * db.length)]
@@ -12,49 +11,69 @@ function pickWord() {
 }
 
 async function keyPressHandler(e) {
-    let row = rows[currentRow];
-    console.log("before", row);
-    let box; // if you set box as const the textContent cannot be changed (with const you can only change the content of Objects and Arrays)
     if (e.key === "Enter") {
-        let word = assembleWord(row);
-        console.log(word)
-        if (currentRow + 1 != rows.length && word !== "") {
-            let isAnswerCorrect = checkAnswer(word);
-            if (isAnswerCorrect) {
-                console.log("valid word");
-                currentRow++;
-            } else {
-                console.log("invalid word")
-                clearRow(row);
-            }
-            currentBox = 0;
-        }
+        enterKeyHandler();
     } else if (e.key === "Backspace") {
-        if (currentBox > 0) {
-            currentBox--;
-            box = row.querySelectorAll(".box")[currentBox];
-            box.textContent = "";
-        }
+        backspaceKeyHandler();
     } else if (e.keyCode > 64 && e.keyCode < 91) {
-        console.log("inserted letter")
-        if (currentBox < row.childElementCount) {
-            let box = row.querySelectorAll(".box")[currentBox];
-            box.textContent = e.key;
-            currentBox++;
+        letterKeyHandler(e);
+    } else {
+        console.error("invalid key press");
+    }
+}
+
+function enterKeyHandler() {
+    let row = rows[currentRow];
+    let word = assembleWord(row);
+    console.log(word)
+    if (currentRow + 1 != rows.length && word !== "") {
+        let correctLetterArray = checkAnswer(word);
+        if (db.includes(word.toLowerCase())) {
+            if (correctLetterArray.length === word.length) {
+                console.log("Input is the Answer");
+                return; // implement win logic
+            } else {
+
+            }
+            currentRow++;
+        } else {
+            console.log("invalid word");
+            clearRow(row);
         }
+        currentBox = 0;
+    } else {
+        console.log("the word is not 5 letters!");
+    }
+}
+
+function backspaceKeyHandler() {
+    let row = rows[currentRow];
+    if (currentBox > 0) {
+        currentBox--;
+        let box = row.querySelectorAll(".box")[currentBox];
+        box.textContent = "";
+    }
+}
+
+function letterKeyHandler(e) {
+    let row = rows[currentRow];
+    console.log(`inserted letter "${e.key.toUpperCase()}"`)
+    if (currentBox < row.childElementCount) {
+        let box = row.querySelectorAll(".box")[currentBox];
+        box.textContent = e.key;
+        currentBox++;
     }
 }
 
 function clearRow(row) {
-    let array = row.querySelectorAll(".box");
-    array.forEach(element => element.textContent = "")
+    row.querySelectorAll(".box")
+        .forEach(element => element.textContent = "")
 }
-
 
 /**
  * 
  * @param {*} row the current row to assemble the word from
- * @returns true if user has filled all boxes, otherwise false
+ * @returns string of the assembled word or an empty string
  */
 function assembleWord(row) {
     let array = row.querySelectorAll(".box")
@@ -74,8 +93,7 @@ function checkAnswer(word) {
     return false;
 }
 
-
-function checkAnswerAPI(word) {
+async function checkAnswerAPI(word) {
     return fetch("https://api.dictionaryapi.dev/api/v2/entries/en/" + word)
         .then(res => {
             if (res.ok) {
@@ -90,3 +108,21 @@ function checkAnswerAPI(word) {
         })
         .catch(error => error);
 }
+
+/**
+ * 
+ * @param {*} word word
+ * @param {*} toCompare string to compare to 
+ * @returns array with letters that are included in toCompare 
+ */
+function wordComparison(word, toCompare) {
+    let compArray = toCompare.split("");
+    let result = word.split("");
+    result.filter(letter => compArray.includes(letter));
+    return result;
+}
+
+function getSetLetters(word) {
+    return new Set(word.split(""));
+}
+
