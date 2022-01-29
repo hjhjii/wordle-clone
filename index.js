@@ -125,4 +125,3 @@ function wordComparison(word, toCompare) {
 function getSetLetters(word) {
     return new Set(word.split(""));
 }
-
